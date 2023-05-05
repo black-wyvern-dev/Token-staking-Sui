@@ -1,2 +1,3 @@
-# sui-tokenstaking
-Sui Smart Contract for token staking
+# Token staking Sui
+
+Token staking Smart contract with Move lang on Sui Network
