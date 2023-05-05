@@ -1,5 +1,4 @@
-//! Contract to stake objects in s
-//! Created by Mokshya Protocol
+
 module suistaking::tokenstaking
 {
     use sui::object::{Self, UID,ID};
@@ -8,7 +7,7 @@ module suistaking::tokenstaking
     use sui::coin::{Self, Coin};
     use sui::tx_context::{Self, TxContext};
 
-    struct MokshyaStaking<phantom T> has key {
+    struct TokenStaking<phantom T> has key {
         id:UID,
         // amount of token paid in a week for staking one token,
         // changed to dpr (daily percentage return)in place of apr addressing demand
@@ -22,7 +21,7 @@ module suistaking::tokenstaking
         id: UID,
         obj_id: ID,
     }
-    struct MokshyaReward<phantom T> has key {
+    struct StakingReward<phantom T> has key {
         id:UID,
         //staker
         staker:address,
@@ -58,7 +57,7 @@ module suistaking::tokenstaking
         let balance = coin::into_balance(balance);
         let id = object::new(ctx);
         let obj_id = object::uid_to_inner(&id);
-        let obj = MokshyaStaking { id, dpr,sender , amount:balance };
+        let obj = TokenStaking { id, dpr,sender , amount:balance };
         transfer::share_object(obj);
         // give the creator admin permissions
         let admin_cap= AdminCap { id: object::new(ctx), obj_id };
@@ -67,7 +66,7 @@ module suistaking::tokenstaking
     //Functions for staking 
     public entry fun stake_token<T,P>(
         coin: Coin<T>,
-        _staking: &MokshyaStaking<P>,
+        _staking: &TokenStaking<P>,
         _sender: address,
         _amount:u64,
          ctx: &mut TxContext,
@@ -79,7 +78,7 @@ module suistaking::tokenstaking
         let obj_id = object::uid_to_inner(&id);
         let withdraw_amount=0;
         let start_time=100000;
-        let obj = MokshyaReward { id,staker,amount:deposited_coin,withdraw_amount,start_time };
+        let obj = StakingReward { id,staker,amount:deposited_coin,withdraw_amount,start_time };
         transfer::share_object(obj);
         // give the creator admin permissions
         let admin_cap= AdminCap { id: object::new(ctx), obj_id };
@@ -88,8 +87,8 @@ module suistaking::tokenstaking
 
     public entry fun receiver_reward<T,P>(
         
-        staking: &mut MokshyaStaking<T>,
-        reward: &mut MokshyaReward<P>,
+        staking: &mut TokenStaking<T>,
+        reward: &mut StakingReward<P>,
         _sender: address,
         ctx: &mut TxContext,
     )
@@ -104,8 +103,8 @@ module suistaking::tokenstaking
     }
     public entry fun unstake_fund<T,P>(
     
-        staking: &mut MokshyaStaking<T>,
-        reward: &mut MokshyaReward<P>,
+        staking: &mut TokenStaking<T>,
+        reward: &mut StakingReward<P>,
         _sender: address,
         ctx: &mut TxContext,
     )
